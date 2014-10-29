@@ -16,8 +16,8 @@ object Form1: TForm1
   TextHeight = 13
   object Panel1: TPanel
     Left = 0
-    Top = 328
-    Width = 920
+    Top = 317
+    Width = 912
     Height = 125
     Align = alBottom
     TabOrder = 0
@@ -40,8 +40,8 @@ object Form1: TForm1
   object img: TImgView32
     Left = 0
     Top = 0
-    Width = 920
-    Height = 328
+    Width = 912
+    Height = 317
     Align = alClient
     Bitmap.ResamplerClassName = 'TNearestResampler'
     BitmapAlign = baCustom
