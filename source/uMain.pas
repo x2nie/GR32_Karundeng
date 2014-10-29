@@ -55,7 +55,7 @@ begin
   c := clGray32;
   with img.Bitmap do
   begin
-    x2 := x - 25;
+    x2 := x - 24;
     y := 50;
     LineS(x,y,x2,y+ 2*16, c);
 

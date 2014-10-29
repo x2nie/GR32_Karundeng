@@ -140,33 +140,40 @@ var i : Integer;
 
 begin
   paint1.Buffer.Clear(clWhite32);
+
+  if chkShowNodes.Checked then
+  for I := 0 to High(FNodes) do
+  begin
+    LCurve := Circle(FNodes[I].X, FNodes[I].Y, 4);
+    //PolygonFS(paint1.Buffer, LCurve, $70000000);
+    PolylineFS(paint1.Buffer,LCurve,clYellowgreen32,True,1);
+    //LCurve := Ellipse(FNodes[I].X, FNodes[I].Y, 2.75, 2.75);
+    PolygonFS(paint1.Buffer, LCurve, $D000FF00);
+  end;
+
   case rgMode.ItemIndex of
     0 : PolylineFS( paint1.Buffer, FNodes, clBlack32, False, 1.3);
     2 : DrawCurve();
   end;
 //
 
-  if chkShowNodes.Checked then
-  for I := 0 to High(FNodes) do
-  begin
-    LCurve := Circle(FNodes[I].X, FNodes[I].Y, 4);
-    PolygonFS(paint1.Buffer, LCurve, $FF000000);
-    LCurve := Ellipse(FNodes[I].X, FNodes[I].Y, 2.75, 2.75);
-    PolygonFS(paint1.Buffer, LCurve, $FF00FF00);
-  end;
-
 
 end;
 
 procedure TForm1.paint1MouseDown(Sender: TObject; Button: TMouseButton;
   Shift: TShiftState; X, Y: Integer);
-var index : integer;
+var I,index : integer;
+  L,A : Double;
 begin
   FDragging := True;
-  FCurrentIndex := -1;
+  index := -1;
 
-  for index := 0 to Length(FNodes) -1 do
-    if Sqr(FNodes[Index].X - X) + Sqr(FNodes[Index].Y - Y)  < 25 then
+  L := 1000;
+
+  for I := 0 to Length(FNodes) -1 do
+  begin
+    A := Sqr(FNodes[I].X - X) + Sqr(FNodes[I].Y - Y);
+    if (A  < 25) and (A < L) then
     begin
       {if (Length(FNodes) > 5) and (Button = mbRight) then
       begin
@@ -177,10 +184,40 @@ begin
         PaintBox32.Invalidate;
       end
       else}
-        FCurrentIndex := Index;
       //Exit;
+      L := A;
+      index := I;
+    end;
+  end;
+
+  //DELETE
+  if (Button = mbRight) and (index >= 0) then
+  begin
+    for I := index to Length(FNodes) -2 do
+    begin
+      FNodes[I] := FNodes[I+1];
+    end;
+    SetLength(FNodes, Length(FNodes) - 1);
+
+    paint1.Invalidate;
+    Exit;
+  end;
+
+  //INSERT
+  if (ssShift in Shift) and (index >= 0) then
+  begin
+    SetLength(FNodes, Length(FNodes) + 1);
+
+    for I := Length(FNodes) -1 downto index +1 do
+    begin
+      FNodes[I] := FNodes[I-1];
     end;
 
+    Inc(index);
+  end;
+
+  FCurrentIndex := index;
+  
   if FCurrentIndex < 0 then
   begin
     FCurrentIndex := Length(FNodes);
